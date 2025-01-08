@@ -5,15 +5,15 @@
 
 struct ColorInfo
 {
-	int m_red;
-	int m_green;
-	int m_blue;
+	int m_nRed;
+	int m_nGreen;
+	int m_nBlue;
 };
 
 struct ShapeInfo
 {
-	CFPoint m_center;
-	CFPoint m_size;
+	CFPoint m_ptCenter;
+	CFPoint m_ptSize;
 	int m_nThick;
 	RGBQUAD m_color[256];
 };
@@ -21,16 +21,16 @@ struct ShapeInfo
 class GShape
 {
 public:
-	GShape(CFPoint center);
+	GShape(CFPoint ptCenter);
 	virtual ~GShape();
 
 	virtual void Draw(CDC* pDC) = 0;
-	virtual bool IsInShape(const CFPoint& currentPos, const CFPoint& center) { return false; };
+	virtual bool IsInShape(const CFPoint& ptCurrentPos, const CFPoint& ptCenter) { return false; };
 
-	void SetCenter(CFPoint center) { m_shapeInfo.m_center = center; }
-	CFPoint GetCenter() { return m_shapeInfo.m_center; }
-	void SetSize(CFPoint size) { m_shapeInfo.m_size = size; }
-	CFPoint GetSize() { return m_shapeInfo.m_size; }
+	void SetCenter(CFPoint ptCenter) { m_shapeInfo.m_ptCenter = ptCenter; }
+	CFPoint GetCenter() { return m_shapeInfo.m_ptCenter; }
+	void SetSize(CFPoint ptSize) { m_shapeInfo.m_ptSize = ptSize; }
+	CFPoint GetSize() { return m_shapeInfo.m_ptSize; }
 
 protected:
 	CImage m_image;
@@ -41,7 +41,7 @@ protected:
 class GRectangle : public GShape
 {
 public:
-	GRectangle(CFPoint center, CFPoint size);
+	GRectangle(CFPoint ptCenter, CFPoint ptSize);
 	~GRectangle();
 
 	virtual void Draw(CDC* pDC) override;
@@ -50,12 +50,12 @@ public:
 class GCircle : public GShape
 {
 public:
-	GCircle(CFPoint center, float nRadius, int nThick = 0, bool bText = true);
+	GCircle(CFPoint ptCenter, float fRadius, int nThick = 0, bool bText = true);
 	~GCircle();
 
 	virtual void Draw(CDC* pDC) override;
 	void DrawText(CDC* pDC);
-	bool IsInShape(const CFPoint& currentPos, const CFPoint& center) override;
+	bool IsInShape(const CFPoint& ptCurrentPos, const CFPoint& ptCenter) override;
 
 private:
 	bool m_bText;

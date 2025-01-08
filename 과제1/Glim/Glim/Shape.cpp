@@ -3,9 +3,9 @@
 
 #define TEXT_GAP 15
 
-GShape::GShape(CFPoint center)
+GShape::GShape(CFPoint ptCenter)
 {
-	m_shapeInfo.m_center = center;
+	m_shapeInfo.m_ptCenter = ptCenter;
 	m_nBPP = 32;
 
 	for (int i = 0; i < 256; ++i)
@@ -14,9 +14,6 @@ GShape::GShape(CFPoint center)
 		m_shapeInfo.m_color[i].rgbGreen = i;
 		m_shapeInfo.m_color[i].rgbBlue = i;
 	}
-
-
-	
 }
 
 GShape::~GShape()
@@ -24,11 +21,11 @@ GShape::~GShape()
 }
 
 
-GRectangle::GRectangle(CFPoint center, CFPoint size)
-	: GShape(center)
+GRectangle::GRectangle(CFPoint ptCenter, CFPoint ptSize)
+	: GShape(ptCenter)
 {
-	m_shapeInfo.m_size = size;
-	m_image.Create(m_shapeInfo.m_size.x, -m_shapeInfo.m_size.y, m_nBPP);
+	m_shapeInfo.m_ptSize = ptSize;
+	m_image.Create(m_shapeInfo.m_ptSize.x, -m_shapeInfo.m_ptSize.y, m_nBPP);
 }
 
 GRectangle::~GRectangle()
@@ -38,21 +35,20 @@ GRectangle::~GRectangle()
 void GRectangle::Draw(CDC* pDC)
 {
 	m_image.SetColorTable(0, 256, m_shapeInfo.m_color);
-	
 	m_image.Draw(*pDC, 0, 0);
 }
 
-GCircle::GCircle(CFPoint center, float nRadius, int nThick, bool bText)
-	: GShape(center)
+GCircle::GCircle(CFPoint ptCenter, float fRadius, int nThick, bool bText)
+	: GShape(ptCenter)
 {
-	m_shapeInfo.m_size = { nRadius * 2, nRadius * 2 };
-	if (nThick > nRadius)
-		nThick = nRadius;
+	m_shapeInfo.m_ptSize = { fRadius * 2, fRadius * 2 };
+	if (nThick > fRadius)
+		nThick = fRadius;
 
 	m_shapeInfo.m_nThick = nThick;
 	m_bText = bText;
 
-	m_image.Create(m_shapeInfo.m_size.x, -m_shapeInfo.m_size.y, m_nBPP);
+	m_image.Create(m_shapeInfo.m_ptSize.x, -m_shapeInfo.m_ptSize.y, m_nBPP);
 }
 
 GCircle::~GCircle()
@@ -62,7 +58,7 @@ GCircle::~GCircle()
 void GCircle::Draw(CDC* pDC)
 {
 	m_image.SetHasAlphaChannel(1);
-	//m_image.SetColorTable(0, 256, m_shapeInfo.m_color);
+
 	int nWidth = m_image.GetWidth();
 	int nHeight = m_image.GetHeight();
 	int nPitch = m_image.GetPitch();
@@ -73,10 +69,10 @@ void GCircle::Draw(CDC* pDC)
 	for(int j = 0; j < nHeight; ++j)
 		for (int i = 0; i < nWidth; ++i)
 		{
-			CFPoint currentPos = { i, j };
-			CFPoint center = { m_shapeInfo.m_size.x / 2, m_shapeInfo.m_size.y / 2 };
+			CFPoint ptCurrentPos = { i, j };
+			CFPoint ptCenter = { m_shapeInfo.m_ptSize.x / 2, m_shapeInfo.m_ptSize.y / 2 };
 
-			if (IsInShape(currentPos, center))
+			if (IsInShape(ptCurrentPos, ptCenter))
 			{
 
 				pixel[j * nPitch + i * 4] = 0;
@@ -94,7 +90,7 @@ void GCircle::Draw(CDC* pDC)
 		}
 
 	
-	m_image.Draw(*pDC, m_shapeInfo.m_center.x - m_shapeInfo.m_size.x / 2, m_shapeInfo.m_center.y - m_shapeInfo.m_size.y / 2);
+	m_image.Draw(*pDC, m_shapeInfo.m_ptCenter.x - m_shapeInfo.m_ptSize.x / 2, m_shapeInfo.m_ptCenter.y - m_shapeInfo.m_ptSize.y / 2);
 	
 	if(m_bText)
 		DrawText(pDC);
@@ -106,24 +102,24 @@ void GCircle::DrawText(CDC* pDC)
 	pDC->SetBkMode(TRANSPARENT);
 
 	CString textCenter;
-	textCenter.Format(_T("x : %.0f    y : %.0f"), m_shapeInfo.m_center.x, m_shapeInfo.m_center.y);
-	CRect rect(m_shapeInfo.m_center.x - 100, m_shapeInfo.m_center.y - m_shapeInfo.m_size.y - TEXT_GAP,
-		m_shapeInfo.m_center.x + 100, m_shapeInfo.m_center.y - TEXT_GAP);
+	textCenter.Format(_T("x : %.0f    y : %.0f"), m_shapeInfo.m_ptCenter.x, m_shapeInfo.m_ptCenter.y);
+	CRect rect(m_shapeInfo.m_ptCenter.x - 100, m_shapeInfo.m_ptCenter.y - m_shapeInfo.m_ptSize.y - TEXT_GAP,
+		m_shapeInfo.m_ptCenter.x + 100, m_shapeInfo.m_ptCenter.y - TEXT_GAP);
 
 	pDC->DrawText(textCenter, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 }
 
-bool GCircle::IsInShape(const CFPoint& currentPos, const CFPoint& center)
+bool GCircle::IsInShape(const CFPoint& ptCurrentPos, const CFPoint& ptCenter)
 {
-	float dX = center.x - currentPos.x;
-	float dY = center.y - currentPos.y;
-	float dist = dX * dX + dY * dY;
-	float radius = m_shapeInfo.m_size.x / 2;
+	float fX = ptCenter.x - ptCurrentPos.x;
+	float fY = ptCenter.y - ptCurrentPos.y;
+	float fDist = fX * fX + fY * fY;
+	float fRadius = m_shapeInfo.m_ptSize.x / 2;
 
-	if (m_shapeInfo.m_nThick != 0 && dist < (radius - m_shapeInfo.m_nThick) * (radius - m_shapeInfo.m_nThick))
+	if (m_shapeInfo.m_nThick != 0 && fDist < (fRadius - m_shapeInfo.m_nThick) * (fRadius - m_shapeInfo.m_nThick))
 		return false;
 
-	if (dist < radius*radius)
+	if (fDist < fRadius*fRadius)
 		return true;
 
 	return false;

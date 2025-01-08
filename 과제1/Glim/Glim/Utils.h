@@ -2,6 +2,12 @@
 
 struct CFPoint
 {
+	//CFPoint();
+	//CFPoint(int nx, int ny)
+	//{
+	//	x = (float)nx;
+	//	y = (float)ny;
+	//}
 
 	float x;
 	float y;
