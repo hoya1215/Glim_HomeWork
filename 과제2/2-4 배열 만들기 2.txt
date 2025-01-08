@@ -1,0 +1,52 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+vector<int> vAnswer;
+int nMinNum;
+int nMaxNum;
+int nLength;
+
+bool CheckRange(int num)
+{
+    if(num >= nMinNum && num <= nMaxNum)
+        return true;
+    else
+        return false;
+}
+
+void Find(string num, int count)
+{
+    if(CheckRange(stoi(num)))
+        vAnswer.push_back(stoi(num));
+    
+    if(count >= nLength)
+        return;
+    
+    string num2 = num;
+    num2 += '0';
+    Find(num2, count + 1);
+    
+    num += '5';
+    Find(num, count + 1);
+}
+
+
+vector<int> solution(int l, int r) {
+
+    string num = "5";
+    nMinNum = l;
+    nMaxNum = r;
+    nLength = to_string(r).length();
+    
+    Find(num, 1);
+    
+    sort(vAnswer.begin(), vAnswer.end());
+    
+    if(vAnswer.empty())
+        vAnswer.push_back(-1);
+    
+    return vAnswer;
+}

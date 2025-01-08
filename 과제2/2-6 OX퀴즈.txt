@@ -1,0 +1,43 @@
+#include <string>
+#include <vector>
+#include <sstream>
+
+using namespace std;
+
+vector<string> solution(vector<string> quiz) {
+    vector<string> vAnswer;
+    
+    for(int i = 0; i < quiz.size(); ++i)
+    {
+        string s;
+        istringstream ss(quiz[i]);
+        vector<string> vBuffer;
+        
+        while(getline(ss, s, ' '))
+        {
+            vBuffer.push_back(s);
+        }
+        
+        int nNum1, nNum2, nResult;
+        nNum1 = stoi(vBuffer[0]);
+        nNum2 = stoi(vBuffer[2]);
+        nResult = stoi(vBuffer[4]);    
+        
+        if(vBuffer[1] == "-")
+        {
+            if(nNum1 - nNum2 == nResult)
+                vAnswer.push_back("O");
+            else
+                vAnswer.push_back("X");
+        }
+        else
+        {
+            if(nNum1 + nNum2 == nResult)
+                vAnswer.push_back("O");
+            else
+                vAnswer.push_back("X");
+        }
+    }
+    
+    return vAnswer;
+}
