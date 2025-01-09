@@ -21,10 +21,12 @@ public:
 	CGlimDlg(CWnd* pParent = nullptr);	
 	virtual ~CGlimDlg();
 
-	void DrawClickCircle(CPoint ptPoint);
+	void DrawDot(CPoint ptPoint);
 	void DrawBigCircle(CDC* pDC);
-	void DrawAllCircle(CDC* pDC);
+	void DrawAll(CDC* pDC);
 	void RandomMoveClickCircle();
+
+	void UpdateLayout(CDC* pDC);
 
 	int IsMouseInShape(CPoint ptPoint);
 	void Reset();

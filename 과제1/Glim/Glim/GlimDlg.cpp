@@ -24,7 +24,7 @@ void ThreadRandomMove(CGlimDlg* pGlimDlg)
 	for (int i = 0; i < 10; ++i)
 	{
 		pGlimDlg->RandomMoveClickCircle();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
 }
 
@@ -92,8 +92,8 @@ BOOL CGlimDlg::OnInitDialog()
 		}
 	}
 
-	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
-	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
+	SetIcon(m_hIcon, TRUE);			
+	SetIcon(m_hIcon, FALSE);		
 
 	return TRUE; 
 }
@@ -116,12 +116,12 @@ void CGlimDlg::OnPaint()
 
 
 	CPaintDC dc(this);
-	DrawAllCircle(&dc);
+	DrawAll(&dc);
 
 	CDialogEx::OnPaint();
 }
 
-void CGlimDlg::DrawClickCircle(CPoint ptPoint)
+void CGlimDlg::DrawDot(CPoint ptPoint)
 {
 	int nRadius = 10;
 	CFPoint ptCenter = { ptPoint.x , ptPoint.y };
@@ -195,7 +195,7 @@ void CGlimDlg::DrawBigCircle(CDC* pDC)
 	m_pCircle->Draw(pDC);
 }
 
-void CGlimDlg::DrawAllCircle(CDC* pDC)
+void CGlimDlg::DrawAll(CDC* pDC)
 {
 	CDC memDC;
 	CRect clientRect;
@@ -216,8 +216,12 @@ void CGlimDlg::DrawAllCircle(CDC* pDC)
 	if (m_vShape.size() >= MAX_SHAPE)
 		DrawBigCircle(&memDC);
 
+	UpdateLayout(&memDC);
+
 	pDC->BitBlt(0, 0, clientRect.Width(), clientRect.Height(), &memDC, 0, 0, SRCCOPY);
 	memDC.SelectObject(pOldBitmap);
+
+
 }
 
 void CGlimDlg::RandomMoveClickCircle()
@@ -241,6 +245,23 @@ void CGlimDlg::RandomMoveClickCircle()
 	}
 
 	Invalidate(FALSE);
+}
+
+void CGlimDlg::UpdateLayout(CDC* pDC)
+{
+	pDC->SetBkMode(TRANSPARENT);
+
+	CString textDotCount;
+	textDotCount.Format(_T("Dot : %d"), m_vShape.size());
+
+	int nStartX = 300;
+	int nStartY = 10;
+	int nGapX = 100;
+	int nGapY = 50;
+	CRect rect = { nStartX, nStartY, nStartX + nGapX, nStartY + nGapY };
+
+	pDC->DrawText(textDotCount, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
 }
 
 int CGlimDlg::IsMouseInShape(CPoint ptPoint)
@@ -293,7 +314,7 @@ void CGlimDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		m_ptPrevMousePos = point;
 		break;
 	case ESTATE::NONE:
-		DrawClickCircle(point);
+		DrawDot(point);
 	}
 
 
@@ -318,10 +339,10 @@ void CGlimDlg::OnBnClickedRandomMove()
 {
 
 	std::thread _thread1(ThreadRandomMove, this);
-	//std::thread _thread2(ThreadRandomMove, this);
+	std::thread _thread2(ThreadRandomMove, this);
 
 	_thread1.detach();
-	//_thread2.detach();
+	_thread2.detach();
 }
 
 
