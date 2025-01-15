@@ -1,4 +1,4 @@
-# Grim_HomeWork
+# Glim_HomeWork
 
 ## 과제1 영상
 
